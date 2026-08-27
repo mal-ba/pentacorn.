@@ -26,6 +26,7 @@
       const html = await (await fetch('/side-menu.html')).text();
       const mount = document.getElementById('side-menu-mount');
       if(mount) mount.outerHTML = html;
+      if(window.i18nApply) window.i18nApply();
 
       const overlay = document.getElementById('side-menu-overlay');
       const closeBtn = document.getElementById('side-menu-close-btn');

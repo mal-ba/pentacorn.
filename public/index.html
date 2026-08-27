@@ -549,7 +549,7 @@
     <a href="#pricing">pricing</a>
     <a href="#scan">scan demo</a>
   </div>
-  <a class="nav-support-btn" href="/community.html">커뮤니티</a>
+  <a class="nav-support-btn" href="/community.html" data-i18n="community">커뮤니티</a>
 </nav>
 
 <div id="side-menu-mount"></div>
@@ -1488,6 +1488,7 @@
 
       const html = await (await fetch('/side-menu.html')).text();
       document.getElementById('side-menu-mount').outerHTML = html;
+      if(window.i18nApply) window.i18nApply();
 
       const overlay = document.getElementById('side-menu-overlay');
       const closeBtn = document.getElementById('side-menu-close-btn');
@@ -1774,5 +1775,6 @@
 
 </script>
 
+<script src="/i18n.js" defer></script>
 </body>
 </html>
