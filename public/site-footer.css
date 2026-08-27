@@ -1,0 +1,68 @@
+/* ====== site-footer.css : 공용 footer + 버그제보 모달 스타일 ======
+   index.html의 동일 스타일을 그대로 옮겨온 파일이에요. side-menu.css와
+   같은 방식으로, footer가 없는 페이지에서 site-footer.js가 불러다 씁니다. */
+
+.btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:14px 26px; border-radius:999px;
+  font-size:14px; font-weight:600; cursor:pointer;
+  border:1px solid transparent;
+  transition:transform .15s ease;
+  text-decoration:none;
+}
+.btn-primary{background:var(--star); color:var(--deep);}
+.btn-ghost{background:transparent; color:var(--paper); border-color:rgba(255,255,255,0.35);}
+
+.wizard-close{
+  width:32px; height:32px; border-radius:50%; border:1px solid var(--line);
+  background:var(--paper); font-size:14px; cursor:pointer; flex-shrink:0;
+}
+.wizard-close:hover{ border-color:var(--star-dark); }
+
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(15,46,44,0.45); z-index:200;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+}
+.modal-overlay[hidden]{ display:none; }
+.modal-box{
+  background:var(--paper); border-radius:18px; max-width:380px; width:100%;
+  padding:30px 26px; box-shadow:0 24px 60px rgba(0,0,0,0.25);
+}
+.modal-box h3{ font-size:18px; font-weight:600; margin-bottom:10px; }
+.modal-box p{ font-size:13.5px; color:var(--ink-soft); margin-bottom:18px; line-height:1.55; }
+.modal-actions{ display:flex; gap:10px; }
+.modal-actions .btn{ flex:1; justify-content:center; }
+.modal-note{ font-size:11.5px; color:var(--ink-soft); margin-top:4px; }
+
+.consent-box{ max-width:480px; max-height:88vh; overflow-y:auto; position:relative; }
+.consent-desc{ font-size:12.5px; color:var(--ink-soft); line-height:1.6; margin:8px 0 12px; }
+.bugreport-textarea{
+  width:100%; min-height:120px; resize:vertical; margin-top:14px;
+  font-family:inherit; font-size:14px; color:var(--ink); line-height:1.6;
+  padding:12px 14px; border-radius:10px; border:1px solid var(--line);
+  background:var(--paper); outline:none;
+}
+.bugreport-textarea:focus{ border-color:var(--star-dark); }
+
+footer{
+  background:var(--deep); color:#AFC4C0; padding:44px 6vw;
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:16px;
+  font-size:13px;
+}
+footer .brand{color:var(--paper);}
+.footer-social{ grid-column:2; justify-self:center; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.footer-social a{ color:#AFC4C0; font-weight:600; transition:color .15s ease; }
+.footer-social a:hover{ color:var(--paper); }
+.footer-social .dot{ color:#4A6D68; }
+.footer-action-boxes{ display:flex; gap:10px; flex-wrap:wrap; grid-column:3; justify-self:end; }
+.footer-action-box{
+  display:inline-flex; align-items:center; gap:8px; padding:11px 18px; border-radius:10px;
+  font-size:13.5px; font-weight:600; border:1px solid rgba(255,255,255,0.25);
+  background:rgba(255,255,255,0.06); color:var(--paper); cursor:pointer; font-family:inherit;
+}
+.footer-action-box:hover{ background:rgba(255,255,255,0.14); }
+@media(max-width:600px){
+  footer{ grid-template-columns:1fr; text-align:center; }
+  .footer-social{ grid-column:1; justify-content:center; }
+  .footer-action-boxes{ grid-column:1; justify-self:center; }
+}

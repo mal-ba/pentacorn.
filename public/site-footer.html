@@ -1,0 +1,32 @@
+<footer>
+  <div>
+    <div class="brand" style="font-weight:600; margin-bottom:6px;">UNEXPOSED</div>
+    PentaCorp.
+  </div>
+  <div class="footer-action-boxes" id="footer-action-boxes">
+    <button class="footer-action-box" id="contact-fab" type="button">💬 문의하기</button>
+    <button class="footer-action-box" id="bugreport-fab" type="button">🐛 버그 제보하기</button>
+  </div>
+  <div class="footer-social">
+    <a href="https://www.instagram.com/jaehoon703/?hl=ko" target="_blank" rel="noopener noreferrer">Instagram</a>
+    <span class="dot">·</span>
+    <a href="https://www.meshy.ai/ko/@s17789845805bd65" target="_blank" rel="noopener noreferrer">Meshy AI</a>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="bugreport-modal" hidden>
+  <div class="modal-box consent-box">
+    <h3 class="serif">버그 제보하기</h3>
+    <p class="consent-desc">어떤 화면에서, 뭘 하다가, 뭐가 이상했는지 최대한 자세히 적어주시면 큰 도움이 돼요.</p>
+    <form id="bugreport-form">
+      <textarea id="bugreport-desc-input" class="bugreport-textarea" placeholder="예: 옷장에서 후드집업을 입혔더니 위치가 이상하게 나와요." maxlength="2000" required></textarea>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="bugreport-submit-btn" type="submit">제보하기</button>
+      </div>
+      <p class="modal-note" id="bugreport-note"></p>
+    </form>
+    <button class="wizard-close" id="bugreport-close-btn" type="button" aria-label="닫기" style="position:absolute; top:18px; right:18px;">✕</button>
+  </div>
+</div>
+
+<div id="support-mount"></div>
