@@ -117,22 +117,22 @@
       UNEXPOSED
     </a>
   </div>
-  <button class="upload-open-btn" id="upload-open-btn" type="button">작품 올리기</button>
+  <button class="upload-open-btn" id="upload-open-btn" type="button" data-i18n="communityUploadBtn">작품 올리기</button>
 </header>
 
 <div id="side-menu-mount"></div>
 
 <div class="modal-overlay" id="upload-modal" hidden>
   <div class="modal-box">
-    <button class="modal-close-btn" id="upload-close-btn" type="button" aria-label="닫기">✕</button>
-    <h2>내 작품 올리기</h2>
-    <p class="login-note" id="login-note">로그인 후 이용할 수 있어요 — 왼쪽 상단 메뉴에서 로그인해주세요.</p>
+    <button class="modal-close-btn" id="upload-close-btn" type="button" aria-label="닫기" data-i18n-aria="close">✕</button>
+    <h2 data-i18n="communityUploadModalTitle">내 작품 올리기</h2>
+    <p class="login-note" id="login-note" data-i18n="communityLoginNote">로그인 후 이용할 수 있어요 — 왼쪽 상단 메뉴에서 로그인해주세요.</p>
     <form class="upload-form" id="upload-form" hidden>
-      <input type="text" id="post-title-input" placeholder="제목 (예: 여름용 원피스 코디)" maxlength="80" required>
-      <textarea id="post-desc-input" placeholder="설명(선택) — 어떤 원단·무늬를 썼는지 등" maxlength="500"></textarea>
-      <label class="file-label" for="post-image-input">이미지 선택 <input type="file" id="post-image-input" accept="image/*" hidden></label>
+      <input type="text" id="post-title-input" placeholder="제목 (예: 여름용 원피스 코디)" maxlength="80" required data-i18n-placeholder="communityTitlePlaceholder">
+      <textarea id="post-desc-input" placeholder="설명(선택) — 어떤 원단·무늬를 썼는지 등" maxlength="500" data-i18n-placeholder="communityDescPlaceholder"></textarea>
+      <label class="file-label" for="post-image-input"><span data-i18n="communityChooseImage">이미지 선택</span> <input type="file" id="post-image-input" accept="image/*" hidden></label>
       <div class="file-preview" id="post-image-preview"></div>
-      <button class="upload-submit-btn" id="post-submit-btn" type="submit" disabled>올리기</button>
+      <button class="upload-submit-btn" id="post-submit-btn" type="submit" disabled data-i18n="communitySubmitBtn">올리기</button>
       <p class="upload-note" id="upload-note"></p>
     </form>
   </div>
@@ -140,11 +140,11 @@
 
 <main>
   <div class="eyebrow">COMMUNITY</div>
-  <h1>사람들이 만든 작품들</h1>
-  <p class="intro">직접 디자인한 옷·아이템 스크린샷을 올려서 다른 사람들에게 자랑해보세요. 오른쪽 위 "작품 올리기"를 눌러서 올릴 수 있어요 (로그인 필요).</p>
+  <h1 data-i18n="communityTitle">사람들이 만든 작품들</h1>
+  <p class="intro" data-i18n="communityIntro">직접 디자인한 옷·아이템 스크린샷을 올려서 다른 사람들에게 자랑해보세요. 오른쪽 위 "작품 올리기"를 눌러서 올릴 수 있어요 (로그인 필요).</p>
 
   <div class="gallery-grid" id="gallery-grid"></div>
-  <p class="empty-note" id="gallery-empty" hidden>아직 올라온 작품이 없어요. 첫 번째로 올려보세요!</p>
+  <p class="empty-note" id="gallery-empty" hidden data-i18n="communityEmptyNote">아직 올라온 작품이 없어요. 첫 번째로 올려보세요!</p>
 </main>
 
 <div id="footer-mount"></div>
@@ -163,6 +163,7 @@
   const galleryEmpty = document.getElementById('gallery-empty');
 
   let me = null; // 로그인한 사람 정보 (없으면 null)
+  function t(key){ return window.i18nText ? window.i18nText(key) : ''; }
 
   const uploadOpenBtn = document.getElementById('upload-open-btn');
   const uploadModal = document.getElementById('upload-modal');
@@ -201,7 +202,7 @@
   uploadForm.addEventListener('submit', async e => {
     e.preventDefault();
     submitBtn.disabled = true;
-    submitBtn.textContent = '올리는 중...';
+    submitBtn.textContent = t('communityUploading');
     uploadNote.textContent = '';
     try{
       const formData = new FormData();
@@ -215,16 +216,16 @@
         descInput.value = '';
         imageInput.value = '';
         imagePreview.innerHTML = '';
-        uploadNote.textContent = '올렸어요!';
+        uploadNote.textContent = t('communityUploaded');
         loadPosts();
         setTimeout(() => { uploadModal.hidden = true; uploadNote.textContent = ''; }, 1000);
       } else {
-        uploadNote.textContent = data.error || '올리기에 실패했어요.';
+        uploadNote.textContent = data.error || t('communityUploadFailed');
       }
     } catch(err){
-      uploadNote.textContent = '올리는 중 오류가 발생했어요.';
+      uploadNote.textContent = t('communityUploadError');
     } finally {
-      submitBtn.textContent = '올리기';
+      submitBtn.textContent = t('communitySubmitBtn');
       updateSubmitState();
     }
   });
@@ -248,8 +249,8 @@
           <div class="post-card-title">${p.title}</div>
           ${p.description ? `<div class="post-card-desc">${p.description}</div>` : ''}
           <div class="post-card-meta">
-            <span>${p.authorName || '익명'} · ${fmtDate(p.createdAt)}</span>
-            ${(me && (me.email === p.authorEmail)) ? `<button class="post-delete-btn" data-post-id="${p.id}" type="button">삭제</button>` : ''}
+            <span>${p.authorName || t('communityAnonymous')} · ${fmtDate(p.createdAt)}</span>
+            ${(me && (me.email === p.authorEmail)) ? `<button class="post-delete-btn" data-post-id="${p.id}" type="button">${t('communityDeleteBtn')}</button>` : ''}
           </div>
         </div>
       </div>
@@ -267,14 +268,14 @@
   galleryGrid.addEventListener('click', async e => {
     const btn = e.target.closest('.post-delete-btn');
     if(!btn) return;
-    if(!confirm('이 게시물을 삭제할까요?')) return;
+    if(!confirm(t('communityDeleteConfirm'))) return;
     try{
       const res = await fetch(`/api/community/posts/${btn.dataset.postId}`, { method: 'DELETE' });
       const data = await res.json();
       if(data.ok) loadPosts();
-      else alert(data.error || '삭제에 실패했어요.');
+      else alert(data.error || t('communityDeleteFailed'));
     } catch(err){
-      alert('삭제 중 오류가 발생했어요.');
+      alert(t('communityDeleteError'));
     }
   });
 
