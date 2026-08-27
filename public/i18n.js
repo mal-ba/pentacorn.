@@ -193,6 +193,12 @@
     colorResetBtn:{ ko:'색상 초기화', en:'Reset color', ru:'Сбросить цвет', zh:'重置颜色', ja:'色をリセット', fr:'Réinitialiser la couleur', de:'Farbe zurücksetzen', ar:'إعادة تعيين اللون', vi:'Đặt lại màu', ne:'रङ रिसेट गर्नुहोस्', th:'รีเซ็ตสี', fa:'بازنشانی رنگ', sv:'Återställ färg', bn:'রঙ রিসেট করুন', id:'Setel ulang warna', tr:'Rengi sıfırla', nl:'Kleur resetten', hi:'रंग रीसेट करें', pt:'Redefinir cor', it:'Ripristina colore', es:'Restablecer color', pl:'Resetuj kolor' },
     removeBtn:{ ko:'지우기', en:'Remove', ru:'Удалить', zh:'移除', ja:'削除', fr:'Supprimer', de:'Entfernen', ar:'إزالة', vi:'Xóa', ne:'हटाउनुहोस्', th:'ลบออก', fa:'حذف', sv:'Ta bort', bn:'মুছুন', id:'Hapus', tr:'Kaldır', nl:'Verwijderen', hi:'हटाएं', pt:'Remover', it:'Rimuovi', es:'Quitar', pl:'Usuń' },
 
+    // ---- 메뉴 로그인 영역 (JS에서 동적으로 생성) ----
+    adminBadge:{ ko:'관리자', en:'Admin', ru:'Админ', zh:'管理员', ja:'管理者', fr:'Admin', de:'Admin', ar:'مسؤول', vi:'Quản trị viên', ne:'प्रशासक', th:'ผู้ดูแลระบบ', fa:'مدیر', sv:'Admin', bn:'অ্যাডমিন', id:'Admin', tr:'Yönetici', nl:'Beheerder', hi:'व्यवस्थापक', pt:'Administrador', it:'Amministratore', es:'Administrador', pl:'Administrator' },
+    menuProfileSettingsBtn:{ ko:'개인정보 · 배송 설정', en:'Profile & Shipping Settings', ru:'Профиль и настройки доставки', zh:'个人信息·配送设置', ja:'個人情報・配送設定', fr:'Profil et paramètres de livraison', de:'Profil- & Versandeinstellungen', ar:'إعدادات الملف الشخصي والشحن', vi:'Hồ sơ & Cài đặt giao hàng', ne:'व्यक्तिगत जानकारी · ढुवानी सेटिङ', th:'ตั้งค่าโปรไฟล์·การจัดส่ง', fa:'تنظیمات پروفایل و ارسال', sv:'Profil- och leveransinställningar', bn:'প্রোফাইল ও ডেলিভারি সেটিংস', id:'Pengaturan Profil & Pengiriman', tr:'Profil ve Kargo Ayarları', nl:'Profiel- en verzendinstellingen', hi:'प्रोफ़ाइल और शिपिंग सेटिंग्स', pt:'Configurações de Perfil e Envio', it:'Impostazioni profilo e spedizione', es:'Configuración de perfil y envío', pl:'Ustawienia profilu i wysyłki' },
+    menuBodydataSettingsBtn:{ ko:'신체 데이터 동의 설정', en:'Body Data Consent Settings', ru:'Настройки согласия на данные тела', zh:'身体数据同意设置', ja:'身体データ同意設定', fr:'Paramètres de consentement aux données corporelles', de:'Einstellungen zur Körperdaten-Einwilligung', ar:'إعدادات موافقة بيانات الجسد', vi:'Cài đặt Đồng ý dữ liệu cơ thể', ne:'शरीर डेटा सहमति सेटिङ', th:'ตั้งค่าความยินยอมข้อมูลร่างกาย', fa:'تنظیمات رضایت داده‌های بدن', sv:'Inställningar för samtycke till kroppsdata', bn:'শরীর ডেটা সম্মতি সেটিংস', id:'Pengaturan Persetujuan Data Tubuh', tr:'Beden Verisi Onay Ayarları', nl:'Instellingen voor toestemming lichaamsgegevens', hi:'शरीर डेटा सहमति सेटिंग्स', pt:'Configurações de Consentimento de Dados Corporais', it:'Impostazioni di consenso ai dati corporei', es:'Configuración de consentimiento de datos corporales', pl:'Ustawienia zgody na dane ciała' },
+    logoutBtn:{ ko:'로그아웃', en:'Log out', ru:'Выйти', zh:'退出登录', ja:'ログアウト', fr:'Se déconnecter', de:'Abmelden', ar:'تسجيل الخروج', vi:'Đăng xuất', ne:'लगआउट', th:'ออกจากระบบ', fa:'خروج', sv:'Logga ut', bn:'লগআউট', id:'Keluar', tr:'Çıkış yap', nl:'Uitloggen', hi:'लॉग आउट करें', pt:'Sair', it:'Esci', es:'Cerrar sesión', pl:'Wyloguj się' },
+
 
 
 
@@ -235,7 +241,15 @@
     localStorage.setItem(STORAGE_KEY, code);
     apply();
     renderWidgetLabel();
+    if(typeof window.renderMenuAuthUI === 'function') window.renderMenuAuthUI();
   }
+
+  function i18nText(key){
+    const entry = DICT[key];
+    if(!entry) return key;
+    return entry[getLang()] || entry.ko;
+  }
+  window.i18nText = i18nText;
 
   function apply(){
     const lang = getLang();
