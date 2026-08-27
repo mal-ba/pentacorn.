@@ -91,16 +91,18 @@
 
     const style = document.createElement('style');
     style.textContent = `
-      #lang-switch-btn{
+      #lang-switch-btn.floating{
         position:fixed; right:16px; bottom:16px; z-index:9999;
-        display:flex; align-items:center; gap:6px;
         background:#0F2E2C; color:#F5F2EA; border:none;
-        padding:10px 14px; border-radius:999px; font-size:13px; font-weight:600;
-        box-shadow:0 8px 20px rgba(0,0,0,0.25); cursor:pointer;
-        font-family:inherit;
+        padding:10px 14px; border-radius:999px;
+        box-shadow:0 8px 20px rgba(0,0,0,0.25);
+      }
+      #lang-switch-btn{
+        display:inline-flex; align-items:center; gap:6px;
+        font-size:13.5px; font-weight:600; cursor:pointer; font-family:inherit;
       }
       #lang-switch-panel{
-        position:fixed; right:16px; bottom:64px; z-index:9999;
+        position:fixed; z-index:9999;
         background:#FFFDF8; border:1px solid rgba(20,32,30,0.15);
         border-radius:12px; box-shadow:0 16px 40px rgba(0,0,0,0.25);
         max-height:60vh; overflow-y:auto; min-width:200px;
@@ -116,11 +118,20 @@
     `;
     document.head.appendChild(style);
 
+    const footerSlot = document.getElementById('footer-action-boxes');
+
     const btn = document.createElement('button');
     btn.id = 'lang-switch-btn';
     btn.type = 'button';
     btn.innerHTML = `🌐 <span class="lang-switch-code">KO</span>`;
-    document.body.appendChild(btn);
+
+    if(footerSlot){
+      btn.className = 'footer-action-box';
+      footerSlot.appendChild(btn);
+    } else {
+      btn.className = 'floating';
+      document.body.appendChild(btn);
+    }
 
     const panel = document.createElement('div');
     panel.id = 'lang-switch-panel';
@@ -138,10 +149,27 @@
     });
     document.body.appendChild(panel);
 
-    btn.addEventListener('click', () => panel.classList.toggle('open'));
-    document.addEventListener('click', (e) => {
-      if(!panel.contains(e.target) && e.target !== btn) panel.classList.remove('open');
+    function positionPanel(){
+      const r = btn.getBoundingClientRect();
+      const panelHeight = Math.min(window.innerHeight * 0.6, 420);
+      let top = r.top - panelHeight - 8;
+      if(top < 8) top = r.bottom + 8;
+      let left = r.right - 200;
+      if(left < 8) left = 8;
+      if(left + 200 > window.innerWidth - 8) left = window.innerWidth - 208;
+      panel.style.top = top + 'px';
+      panel.style.left = left + 'px';
+    }
+
+    btn.addEventListener('click', () => {
+      const willOpen = !panel.classList.contains('open');
+      if(willOpen) positionPanel();
+      panel.classList.toggle('open', willOpen);
     });
+    document.addEventListener('click', (e) => {
+      if(!panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) panel.classList.remove('open');
+    });
+    window.addEventListener('resize', () => { if(panel.classList.contains('open')) positionPanel(); });
 
     renderWidgetLabel();
   }
