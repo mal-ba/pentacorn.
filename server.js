@@ -10,6 +10,7 @@ const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const { createClient } = require('@supabase/supabase-js');
 const multer = require('multer');
+const compression = require('compression');
 
 const PORT = process.env.PORT || 3000;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
@@ -270,6 +271,7 @@ function toPublicWardrobeItem(row, viewerEmail) {
 
 const app = express();
 app.set('trust proxy', 1); // Render/Railway 같은 리버스 프록시 뒤에서 secure 쿠키가 정상 동작하도록
+app.use(compression()); // 응답을 gzip으로 압축해서 전송량을 줄여요 (html/css/js 등 텍스트 파일에 특히 효과적)
 app.use(express.json({ limit: '2mb' })); // 신체 스캔 썸네일 등 작은 JSON 요청용 (큰 파일은 multer로 따로 처리)
 app.use(cookieParser());
 
