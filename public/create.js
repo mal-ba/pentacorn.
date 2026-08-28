@@ -197,15 +197,42 @@ const el = {
   loading: document.getElementById('create-loading'),
 };
 
+/* ---------- 모달 열기/닫기 ----------
+   customize-3d.js의 startMannequinViewerOnce() 패턴과 동일해요: 모달이 hidden인 동안은
+   컨테이너 크기가 0이라 renderer/camera를 그때 만들면 화면이 깨져요. 그래서 실제로
+   모달이 열릴 때(container가 화면에 보일 때) 딱 한 번만 초기화해요. */
+const createModal = document.getElementById('create-modal');
+const createModalCloseBtn = document.getElementById('create-modal-close');
+let viewerStarted = false;
+
+function openCreateModal(){
+  createModal.hidden = false;
+  if(!viewerStarted){
+    viewerStarted = true;
+    initViewer();
+  } else {
+    resizeViewer();
+  }
+}
+function closeCreateModal(){
+  createModal.hidden = true;
+}
+window.openCreateModal = openCreateModal;
+window.closeCreateModal = closeCreateModal;
+createModalCloseBtn.addEventListener('click', closeCreateModal);
+
+let container, scene, camera, renderer, controls, resizeViewer;
+
+function initViewer(){
 /* ---------- three.js 씬 ---------- */
-const container = document.getElementById('create-3d');
-const scene = new THREE.Scene();
+container = document.getElementById('create-3d');
+scene = new THREE.Scene();
 scene.background = new THREE.Color(0x123B38);
-const camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, 0.1, 100);
+camera = new THREE.PerspectiveCamera(42, (container.clientWidth || 1) / (container.clientHeight || 1), 0.1, 100);
 camera.position.set(0, 1.3, 3.2);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.setSize(container.clientWidth || 300, container.clientHeight || 300);
 container.appendChild(renderer.domElement);
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0x2a2a2a, 1.3));
@@ -213,7 +240,7 @@ const dirLight = new THREE.DirectionalLight(0xffffff, 1.1);
 dirLight.position.set(2, 4, 3);
 scene.add(dirLight);
 
-const controls = new OrbitControls(camera, renderer.domElement);
+controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.enablePan = false;
 controls.minDistance = 0.6;
@@ -246,13 +273,20 @@ loader.load('/models/mannequin.glb?v=4', gltf => {
   controls.update();
   renderer.render(scene, camera);
 })();
-window.addEventListener('resize', () => {
+resizeViewer = () => {
   const w = container.clientWidth, h = container.clientHeight;
   if(!w || !h) return;
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
   renderer.setSize(w, h);
-});
+};
+window.addEventListener('resize', resizeViewer);
+new ResizeObserver(resizeViewer).observe(container);
+// 모달이 막 열린 직후엔 레이아웃이 아직 반영 안 됐을 수 있어 한 프레임 뒤에 한 번 더 맞춰요.
+requestAnimationFrame(resizeViewer);
+
+setupPointerPainting();
+}
 
 /* ---------- 옷 생성/재생성 ---------- */
 function rebuildGarment(){
@@ -359,25 +393,27 @@ renderFabricRow();
 renderPartList();
 
 /* ---------- 3D 모델을 직접 탭해서 채색 ---------- */
-const raycaster = new THREE.Raycaster();
-const ptr = new THREE.Vector2();
-let pointerDownPos = null;
+function setupPointerPainting(){
+  const raycaster = new THREE.Raycaster();
+  const ptr = new THREE.Vector2();
+  let pointerDownPos = null;
 
-renderer.domElement.addEventListener('pointerdown', e => { pointerDownPos = { x: e.clientX, y: e.clientY }; });
-renderer.domElement.addEventListener('pointerup', e => {
-  if(!pointerDownPos) return;
-  const moved = Math.abs(e.clientX - pointerDownPos.x) + Math.abs(e.clientY - pointerDownPos.y);
-  pointerDownPos = null;
-  if(moved > 6 || !state.garmentGroup) return; // 드래그(회전)였으면 채색하지 않아요.
-  const rect = renderer.domElement.getBoundingClientRect();
-  ptr.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-  ptr.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-  raycaster.setFromCamera(ptr, camera);
-  const hits = raycaster.intersectObject(state.garmentGroup, true);
-  if(!hits.length) return;
-  const hitMesh = hits[0].object;
-  const region = Object.entries(state.parts).find(([, mesh]) => mesh === hitMesh)?.[0];
-  if(!region) return;
-  paintPart(region, state.activeFabric);
-  el.partList.querySelectorAll('.part-row').forEach(b => b.classList.toggle('just-tapped', b.dataset.region === region));
-});
+  renderer.domElement.addEventListener('pointerdown', e => { pointerDownPos = { x: e.clientX, y: e.clientY }; });
+  renderer.domElement.addEventListener('pointerup', e => {
+    if(!pointerDownPos) return;
+    const moved = Math.abs(e.clientX - pointerDownPos.x) + Math.abs(e.clientY - pointerDownPos.y);
+    pointerDownPos = null;
+    if(moved > 6 || !state.garmentGroup) return; // 드래그(회전)였으면 채색하지 않아요.
+    const rect = renderer.domElement.getBoundingClientRect();
+    ptr.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    ptr.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(ptr, camera);
+    const hits = raycaster.intersectObject(state.garmentGroup, true);
+    if(!hits.length) return;
+    const hitMesh = hits[0].object;
+    const region = Object.entries(state.parts).find(([, mesh]) => mesh === hitMesh)?.[0];
+    if(!region) return;
+    paintPart(region, state.activeFabric);
+    el.partList.querySelectorAll('.part-row').forEach(b => b.classList.toggle('just-tapped', b.dataset.region === region));
+  });
+}
